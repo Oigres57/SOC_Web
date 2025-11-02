@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Práctica - Conexión Remota</title>
+  <style>
+    /* Design System Variables */
+    :root {
+      --color-white: rgba(255, 255, 255, 1);
+      --color-black: rgba(0, 0, 0, 1);
+      --color-cream-50: rgba(252, 252, 249, 1);
+      --color-cream-100: rgba(255, 255, 253, 1);
+      --color-gray-200: rgba(245, 245, 245, 1);
+      --color-gray-300: rgba(167, 169, 169, 1);
+      --color-gray-400: rgba(119, 124, 124, 1);
+      --color-slate-500: rgba(98, 108, 113, 1);
+      --color-brown-600: rgba(94, 82, 64, 1);
+      --color-charcoal-700: rgba(31, 33, 33, 1);
+      --color-charcoal-800: rgba(38, 40, 40, 1);
+      --color-slate-900: rgba(19, 52, 59, 1);
+      --color-teal-300: rgba(50, 184, 198, 1);
+      --color-teal-400: rgba(45, 166, 178, 1);
+      --color-teal-500: rgba(33, 128, 141, 1);
+      --color-teal-600: rgba(29, 116, 128, 1);
+      --color-teal-700: rgba(26, 104, 115, 1);
+      --color-red-400: rgba(255, 84, 89, 1);
+      --color-red-500: rgba(192, 21, 47, 1);
+      --color-orange-400: rgba(230, 129, 97, 1);
+      --color-orange-500: rgba(168, 75, 47, 1);
+      
+      --color-brown-600-rgb: 94, 82, 64;
+      --color-teal-500-rgb: 33, 128, 141;
+      --color-slate-900-rgb: 19, 52, 59;
+      --color-slate-500-rgb: 98, 108, 113;
+      
+      --color-bg-1: rgba(59, 130, 246, 0.08);
+      --color-bg-2: rgba(245, 158, 11, 0.08);
+      --color-bg-3: rgba(34, 197, 94, 0.08);
+      --color-bg-4: rgba(239, 68, 68, 0.08);
+      --color-bg-5: rgba(147, 51, 234, 0.08);
+      
+      --color-background: var(--color-cream-50);
+      --color-surface: var(--color-cream-100);
+      --color-text: var(--color-slate-900);
+      --color-text-secondary: var(--color-slate-500);
+      --color-primary: var(--color-teal-500);
+      --color-primary-hover: var(--color-teal-600);
+      --color-primary-active: var(--color-teal-700);
+      --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+      --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+      --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+      
+      --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-family-mono: 'Courier New', Consolas, Monaco, monospace;
+      --font-size-xs: 11px;
+      --font-size-sm: 12px;
+      --font-size-base: 14px;
+      --font-size-md: 14px;
+      --font-size-lg: 16px;
+      --font-size-xl: 18px;
+      --font-size-2xl: 20px;
+      --font-size-3xl: 24px;
+      --font-size-4xl: 30px;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 550;
+      --font-weight-bold: 600;
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      
+      --space-4: 4px;
+      --space-6: 6px;
+      --space-8: 8px;
+      --space-12: 12px;
+      --space-16: 16px;
+      --space-20: 20px;
+      --space-24: 24px;
+      --space-32: 32px;
+      
+      --radius-sm: 6px;
+      --radius-base: 8px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-gray-400-rgb: 119, 124, 124;
+        --color-teal-300-rgb: 50, 184, 198;
+        --color-gray-300-rgb: 167, 169, 169;
+        --color-gray-200-rgb: 245, 245, 245;
+        
+        --color-bg-1: rgba(29, 78, 216, 0.15);
+        --color-bg-2: rgba(180, 83, 9, 0.15);
+        --color-bg-3: rgba(21, 128, 61, 0.15);
+        --color-bg-4: rgba(185, 28, 28, 0.15);
+        --color-bg-5: rgba(107, 33, 168, 0.15);
+        
+        --color-background: var(--color-charcoal-700);
+        --color-surface: var(--color-charcoal-800);
+        --color-text: var(--color-gray-200);
+        --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+        --color-primary: var(--color-teal-300);
+        --color-primary-hover: var(--color-teal-400);
+        --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+        --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+        --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: var(--font-size-base);
+    }
+
+    body {
+      font-family: var(--font-family-base);
+      line-height: var(--line-height-normal);
+      color: var(--color-text);
+      background-color: var(--color-background);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-16) var(--space-24);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-12);
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      border-radius: var(--radius-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-cream-50);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--color-text);
+      cursor: pointer;
+      padding: var(--space-8);
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      position: fixed;
+      top: 73px;
+      left: 0;
+      width: 280px;
+      height: calc(100vh - 73px);
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      padding: var(--space-24);
+      z-index: 100;
+      transition: transform var(--duration-normal) var(--ease-standard);
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-24);
+    }
+
+    .nav-title {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-12);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-12);
+      padding: var(--space-12);
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: var(--radius-base);
+      transition: all var(--duration-fast) var(--ease-standard);
+      margin-bottom: var(--space-4);
+      font-size: var(--font-size-md);
+    }
+
+    .nav-link:hover {
+      background: var(--color-secondary);
+      color: var(--color-primary);
+    }
+
+    .nav-link.active {
+      background: var(--color-primary);
+      color: var(--color-cream-50);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      margin-top: 73px;
+      padding: var(--space-32);
+      max-width: 1200px;
+      transition: margin-left var(--duration-normal) var(--ease-standard);
+    }
+
+    .main-content.expanded {
+      margin-left: 0;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: var(--space-32) 0;
+      margin-bottom: var(--space-32);
+    }
+
+    .hero h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-16);
+      line-height: var(--line-height-tight);
+    }
+
+    .hero p {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      position: fixed;
+      top: 73px;
+      left: 280px;
+      right: 0;
+      height: 4px;
+      background: var(--color-secondary);
+      z-index: 50;
+      transition: left var(--duration-normal) var(--ease-standard);
+    }
+
+    .progress-container.expanded {
+      left: 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--color-primary);
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: var(--space-32);
+      scroll-margin-top: 90px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-16);
+      margin-bottom: var(--space-24);
+      padding-bottom: var(--space-16);
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .section-number {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary);
+      color: var(--color-cream-50);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    /* Step Card */
+    .step-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-24);
+      margin-bottom: var(--space-20);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: start;
+      gap: var(--space-16);
+      margin-bottom: var(--space-16);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--color-bg-1);
+      color: var(--color-primary);
+      border-radius: var(--radius-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+    }
+
+    .step-content {
+      padding-left: 48px;
+    }
+
+    .step-description {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-16);
+      line-height: 1.6;
+    }
+
+    /* Code Block */
+    .code-block {
+      position: relative;
+      margin: var(--space-16) 0;
+    }
+
+    .code-header {
+      background: var(--color-secondary);
+      padding: var(--space-8) var(--space-16);
+      border-radius: var(--radius-base) var(--radius-base) 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-bottom: none;
+    }
+
+    .code-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .copy-btn {
+      background: var(--color-primary);
+      color: var(--color-cream-50);
+      border: none;
+      padding: var(--space-6) var(--space-12);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .copy-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .copy-btn.copied {
+      background: var(--color-teal-700);
+    }
+
+    .code-content {
+      background: var(--color-charcoal-800);
+      color: var(--color-gray-200);
+      padding: var(--space-16);
+      border-radius: 0 0 var(--radius-base) var(--radius-base);
+      overflow-x: auto;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
+      line-height: 1.5;
+      border: 1px solid var(--color-border);
+    }
+
+    .code-content code {
+      color: var(--color-teal-300);
+    }
+
+    /* Info Box */
+    .info-box {
+      background: var(--color-bg-1);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-16);
+      border-radius: var(--radius-base);
+      margin: var(--space-16) 0;
+    }
+
+    .info-box.warning {
+      background: var(--color-bg-2);
+      border-left-color: var(--color-orange-500);
+    }
+
+    .info-box-title {
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-8);
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .info-box-content {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--space-32);
+      gap: var(--space-16);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-8);
+      padding: var(--space-12) var(--space-20);
+      background: var(--color-surface);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-base);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+      transition: all var(--duration-fast) var(--ease-standard);
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-cream-50);
+      border-color: var(--color-primary);
+    }
+
+    .nav-btn.primary {
+      background: var(--color-primary);
+      color: var(--color-cream-50);
+      border-color: var(--color-primary);
+    }
+
+    .nav-btn.primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Footer */
+    footer {
+      margin-left: 280px;
+      margin-top: var(--space-32);
+      padding: var(--space-32);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface);
+      text-align: center;
+      transition: margin-left var(--duration-normal) var(--ease-standard);
+    }
+
+    footer.expanded {
+      margin-left: 0;
+    }
+
+    footer p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    /* Table */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-16) 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-base);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .info-table th,
+    .info-table td {
+      padding: var(--space-12);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .info-table th {
+      background: var(--color-secondary);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      font-size: var(--font-size-sm);
+    }
+
+    .info-table td {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .progress-container {
+        left: 0;
+      }
+
+      footer {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        padding: var(--space-12) var(--space-16);
+      }
+
+      .logo {
+        font-size: var(--font-size-lg);
+      }
+
+      .main-content {
+        padding: var(--space-16);
+      }
+
+      .hero h1 {
+        font-size: var(--font-size-3xl);
+      }
+
+      .section-title {
+        font-size: var(--font-size-2xl);
+      }
+
+      .step-content {
+        padding-left: 0;
+      }
+
+      .nav-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Image Placeholder */
+    .image-placeholder {
+      width: 100%;
+      max-width: 600px;
+      min-height: 300px;
+      border: 2px dashed var(--color-border);
+      background: var(--color-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto;
+      border-radius: var(--radius-base);
+      flex-direction: column;
+      gap: var(--space-12);
+      padding: var(--space-24);
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .image-placeholder:hover {
+      border-color: var(--color-primary);
+      background: var(--color-bg-1);
+    }
+
+    .image-placeholder-icon {
+      font-size: 48px;
+      opacity: 0.5;
+    }
+
+    .image-placeholder-text {
+      text-align: center;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.6;
+    }
+
+    .image-placeholder-label {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--color-background);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">🔐</div>
+        <span>Conexión Remota</span>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-title">Navegación</div>
+      <a href="#hero" class="nav-link active" data-section="hero">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </a>
+      <a href="#section1" class="nav-link" data-section="section1">
+        <span class="nav-icon">📦</span>
+        <span>1. Instalar OpenSSH</span>
+      </a>
+      <a href="#section2" class="nav-link" data-section="section2">
+        <span class="nav-icon">🔌</span>
+        <span>2. Conexiones Remotas</span>
+      </a>
+      <a href="#section3" class="nav-link" data-section="section3">
+        <span class="nav-icon">🔑</span>
+        <span>3. Sin Contraseña</span>
+      </a>
+      <a href="#section4" class="nav-link" data-section="section4">
+        <span class="nav-icon">🖥️</span>
+        <span>4. Conexión RDP</span>
+      </a>
+      <a href="#section5" class="nav-link" data-section="section5">
+        <span class="nav-icon">🐧</span>
+        <span>5. Ubuntu a Windows</span>
+      </a>
+      <a href="#section6" class="nav-link" data-section="section6">
+        <span class="nav-icon">📱</span>
+        <span>6. TeamViewer</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <h1>Práctica - Conexión Remota</h1>
+      <p>Guía completa para configurar y utilizar diferentes métodos de conexión remota entre sistemas Windows 10 y Ubuntu Desktop</p>
+    </section>
+
+    <!-- Section 1: Instalar OpenSSH -->
+    <section class="section" id="section1">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <h2 class="section-title">Instalar OpenSSH</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">1.1</div>
+          <h3 class="step-title">Instalación del Servidor OpenSSH</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Primero necesitamos instalar el servidor OpenSSH en nuestro sistema Ubuntu. Este servidor permitirá que otros equipos se conecten a nuestro sistema de forma remota.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Terminal</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo apt install openssh-server -y')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo apt install openssh-server -y</code>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">ℹ️ Información</div>
+            <div class="info-box-content">
+              El flag <code>-y</code> confirma automáticamente la instalación sin requerir intervención del usuario.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+            <img src="media/Imagen1.png" width="80%%" height="80%%">
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">1.2</div>
+          <h3 class="step-title">Comprobar Instalación</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Una vez instalado, verificamos que el servicio SSH esté funcionando correctamente.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Verificar estado del servicio</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo systemctl status ssh')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo systemctl status ssh</code>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">✓ Resultado esperado</div>
+            <div class="info-box-content">
+              Deberías ver el estado <strong>active (running)</strong> en verde, indicando que el servicio está en ejecución.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen2.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">1.3</div>
+          <h3 class="step-title">Activar Inicio Automático</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Para que el servicio SSH se inicie automáticamente al arrancar el sistema, ejecutamos:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Iniciar servicio</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo systemctl start ssh')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo systemctl start ssh</code>
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Habilitar inicio automático</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo systemctl enable ssh')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo systemctl enable ssh</code>
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen3.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#hero" class="nav-btn">← Inicio</a>
+        <a href="#section2" class="nav-btn primary">Siguiente: Conexiones Remotas →</a>
+      </div>
+    </section>
+
+    <!-- Section 2: Conexiones Remotas -->
+    <section class="section" id="section2">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <h2 class="section-title">Conexiones Remotas</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">2.1</div>
+          <h3 class="step-title">Conexión desde Windows 10 con PuTTY</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            PuTTY es un cliente SSH popular para Windows que nos permite conectarnos a servidores remotos.
+          </p>
+          
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Paso 1: Descargar e instalar PuTTY</h4>
+          <div class="info-box">
+            <div class="info-box-title">📥 Descarga</div>
+            <div class="info-box-content">
+              Descarga PuTTY desde su sitio oficial: <a href="https://www.putty.org/" target="_blank" style="color: var(--color-primary);">www.putty.org</a>
+            </div>
+          </div>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Paso 2: Configurar la conexión</h4>
+          <p class="step-description">
+            1. Abre PuTTY<br>
+            2. En el campo "Host Name", ingresa la dirección IP del servidor Ubuntu<br>
+            3. Puerto: 22 (puerto por defecto de SSH)<br>
+            4. Connection type: SSH<br>
+            5. Haz clic en "Open"
+          </p>
+
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Host Name (IP)</td>
+                <td>192.168.10.10</td>
+              </tr>
+              <tr>
+                <td>Puerto</td>
+                <td>22</td>
+              </tr>
+              <tr>
+                <td>Usuario</td>
+                <td>sergio</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="info-box warning">
+            <div class="info-box-title">⚠️ Primera conexión</div>
+            <div class="info-box-content">
+              La primera vez que te conectes, PuTTY mostrará una alerta de seguridad. Haz clic en "Yes" para aceptar y guardar la clave del servidor.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen4.png" width="80%%" height="80%%">
+          <!-- Image Placeholder -->
+          <img src="media/Imagen5.png" width="80%%" height="80%%">
+          <img src="media/Imagen6.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">2.2</div>
+          <h3 class="step-title">Conexión desde Ubuntu Desktop</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            En Ubuntu Desktop podemos usar el cliente SSH integrado en la terminal sin necesidad de instalar software adicional.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Comando de conexión SSH</span>
+              <button class="copy-btn" onclick="copyCode(this, 'ssh sergio@192.168.10.10')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>ssh sergio@192.168.10.10</code>
+            </div>
+          </div>
+          <p class="step-description">
+            Donde:<br>
+            • <strong>sergio</strong> es el nombre de usuario del sistema remoto<br>
+            • <strong>192.168.10.10</strong> es la dirección IP del servidor Ubuntu
+          </p>
+          <div class="info-box">
+            <div class="info-box-title">🔐 Autenticación</div>
+            <div class="info-box-content">
+              Se te pedirá la contraseña del usuario remoto. Escríbela y presiona Enter (no se mostrará mientras escribes por seguridad).
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen7.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#section1" class="nav-btn">← Anterior: Instalar OpenSSH</a>
+        <a href="#section3" class="nav-btn primary">Siguiente: Conexión sin Contraseña →</a>
+      </div>
+    </section>
+
+    <!-- Section 3: Conexión sin Contraseña -->
+    <section class="section" id="section3">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <h2 class="section-title">Conexión sin Contraseña</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">3.1</div>
+          <h3 class="step-title">Autenticación por Clave SSH</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            La autenticación por clave SSH es más segura que usar contraseñas y permite conectarse sin tener que escribir la contraseña cada vez.
+          </p>
+          <div class="info-box">
+            <div class="info-box-title">🔑 ¿Cómo funciona?</div>
+            <div class="info-box-content">
+              Se genera un par de claves (pública y privada). La clave pública se coloca en el servidor y la privada permanece en tu equipo. Cuando te conectas, el servidor verifica que posees la clave privada correspondiente.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">3.2</div>
+          <h3 class="step-title">Generar Par de Claves SSH</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Ejecuta el siguiente comando en tu equipo local (desde donde te conectarás):
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Generar claves RSA de 4096 bits</span>
+              <button class="copy-btn" onclick="copyCode(this, 'ssh-keygen -t rsa -b 4096')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>ssh-keygen -t rsa -b 4096</code>
+            </div>
+          </div>
+          <p class="step-description">
+            Durante el proceso se te harán las siguientes preguntas:<br>
+            1. <strong>Ubicación del archivo</strong>: Presiona Enter para usar la ubicación por defecto (~/.ssh/id_rsa)<br>
+            2. <strong>Passphrase</strong>: Puedes dejarlo vacío o agregar una contraseña adicional para mayor seguridad
+          </p>
+          <div class="info-box">
+            <div class="info-box-title">📁 Archivos generados</div>
+            <div class="info-box-content">
+              Se crearán dos archivos:<br>
+              • <strong>id_rsa</strong>: Clave privada (¡nunca la compartas!)<br>
+              • <strong>id_rsa.pub</strong>: Clave pública (esta se copia al servidor)
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen8.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">3.3</div>
+          <h3 class="step-title">Copiar Clave Pública al Servidor</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Ahora copiamos la clave pública al servidor remoto:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Copiar clave al servidor</span>
+              <button class="copy-btn" onclick="copyCode(this, 'ssh-copy-id sergio@192.168.10.10')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>ssh-copy-id sergio@192.168.10.10</code>
+            </div>
+          </div>
+          <p class="step-description">
+            Se te pedirá la contraseña del usuario remoto por última vez. Una vez copiada la clave, podrás conectarte sin contraseña.
+          </p>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen9.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">3.4</div>
+          <h3 class="step-title">Conectarse sin Contraseña</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Ahora puedes conectarte sin necesidad de escribir contraseña:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Conexión SSH sin contraseña</span>
+              <button class="copy-btn" onclick="copyCode(this, 'ssh sergio@192.168.10.10')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>ssh sergio@192.168.10.10</code>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">✓ Éxito</div>
+            <div class="info-box-content">
+              Si todo está configurado correctamente, accederás al servidor sin que se te pida contraseña.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen10.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#section2" class="nav-btn">← Anterior: Conexiones Remotas</a>
+        <a href="#section4" class="nav-btn primary">Siguiente: Conexión RDP →</a>
+      </div>
+    </section>
+
+    <!-- Section 4: Conexión con RDP -->
+    <section class="section" id="section4">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <h2 class="section-title">Conexión con RDP</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">4.1</div>
+          <h3 class="step-title">¿Qué es RDP?</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            RDP (Remote Desktop Protocol) es el protocolo de escritorio remoto de Microsoft que permite controlar gráficamente un equipo Windows desde otro dispositivo.
+          </p>
+          <div class="info-box">
+            <div class="info-box-title">ℹ️ Diferencia con SSH</div>
+            <div class="info-box-content">
+              A diferencia de SSH que proporciona acceso por línea de comandos, RDP permite ver y controlar el escritorio completo del equipo remoto.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">4.2</div>
+          <h3 class="step-title">Habilitar Escritorio Remoto en Windows 10</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Para permitir conexiones remotas a tu equipo Windows 10:
+          </p>
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Método 1: Configuración del Sistema</h4>
+          <p class="step-description">
+            1. Abre <strong>Configuración</strong> (Windows + I)<br>
+            2. Ve a <strong>Sistema</strong> &gt; <strong>Escritorio remoto</strong><br>
+            3. Activa <strong>Habilitar Escritorio remoto</strong><br>
+            4. Confirma la acción
+          </p>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Método 2: Panel de Control</h4>
+          <p class="step-description">
+            1. Haz clic derecho en <strong>Este equipo</strong> &gt; <strong>Propiedades</strong><br>
+            2. Selecciona <strong>Configuración de acceso remoto</strong><br>
+            3. En la pestaña <strong>Acceso remoto</strong>, marca:<br>
+            &nbsp;&nbsp;&nbsp;• "Permitir conexiones remotas a este equipo"<br>
+            4. Haz clic en <strong>Aplicar</strong> y <strong>Aceptar</strong>
+          </p>
+
+          <div class="info-box warning">
+            <div class="info-box-title">⚠️ Firewall</div>
+            <div class="info-box-content">
+              Asegúrate de que el firewall de Windows permite conexiones de Escritorio remoto. Windows normalmente configura esto automáticamente al habilitar RDP.
+            </div>
+          </div>
+
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Información</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>IP de Windows 10</td>
+                <td>192.168.10.12</td>
+              </tr>
+              <tr>
+                <td>Puerto RDP</td>
+                <td>3389 (por defecto)</td>
+              </tr>
+              <tr>
+                <td>Usuario</td>
+                <td>Tu usuario de Windows</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen11.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">4.3</div>
+          <h3 class="step-title">Conectarse desde otro Windows</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Windows incluye el cliente de Escritorio remoto por defecto:
+          </p>
+          <p class="step-description">
+            1. Presiona <strong>Windows + R</strong><br>
+            2. Escribe <strong>mstsc</strong> y presiona Enter<br>
+            3. Ingresa la dirección IP del equipo remoto: <strong>192.168.10.12</strong><br>
+            4. Haz clic en <strong>Conectar</strong><br>
+            5. Ingresa tus credenciales de Windows
+          </p>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#section3" class="nav-btn">← Anterior: Conexión sin Contraseña</a>
+        <a href="#section5" class="nav-btn primary">Siguiente: Ubuntu a Windows →</a>
+      </div>
+    </section>
+
+    <!-- Section 5: Conexión Ubuntu a Windows 10 -->
+    <section class="section" id="section5">
+      <div class="section-header">
+        <div class="section-number">5</div>
+        <h2 class="section-title">Conexión Ubuntu a Windows 10</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">5.1</div>
+          <h3 class="step-title">Instalar Remmina</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Remmina es un cliente de escritorio remoto para Linux que soporta múltiples protocolos, incluyendo RDP, VNC y SSH.
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Instalar Remmina</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo apt install remmina remmina-plugin-rdp -y')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo apt install remmina remmina-plugin-rdp -y</code>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">📦 Paquetes</div>
+            <div class="info-box-content">
+              • <strong>remmina</strong>: Aplicación principal<br>
+              • <strong>remmina-plugin-rdp</strong>: Plugin para soporte RDP
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+           <img src="media/Imagen12.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">5.2</div>
+          <h3 class="step-title">Configurar Conexión en Remmina</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            Sigue estos pasos para conectarte a Windows 10 desde Ubuntu:
+          </p>
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Paso 1: Abrir Remmina</h4>
+          <p class="step-description">
+            Busca "Remmina" en el menú de aplicaciones o ejecuta:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Ejecutar Remmina</span>
+              <button class="copy-btn" onclick="copyCode(this, 'remmina')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>remmina</code>
+            </div>
+          </div>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Paso 2: Crear Nueva Conexión</h4>
+          <p class="step-description">
+            1. Haz clic en el botón <strong>+</strong> (Nueva conexión)<br>
+            2. Configura los siguientes parámetros:
+          </p>
+
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Nombre</td>
+                <td>Windows 10 (o el nombre que prefieras)</td>
+              </tr>
+              <tr>
+                <td>Protocolo</td>
+                <td>RDP - Remote Desktop Protocol</td>
+              </tr>
+              <tr>
+                <td>Servidor</td>
+                <td>192.168.10.12</td>
+              </tr>
+              <tr>
+                <td>Nombre de usuario</td>
+                <td>Tu usuario de Windows</td>
+              </tr>
+              <tr>
+                <td>Contraseña</td>
+                <td>Tu contraseña de Windows</td>
+              </tr>
+              <tr>
+                <td>Resolución</td>
+                <td>Usar resolución del cliente</td>
+              </tr>
+              <tr>
+                <td>Calidad de color</td>
+                <td>True color (24 bpp) o superior</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Paso 3: Conectar</h4>
+          <p class="step-description">
+            1. Guarda la configuración<br>
+            2. Haz doble clic en la conexión guardada<br>
+            3. Si aparece un aviso de certificado, acepta la conexión
+          </p>
+
+          <div class="info-box">
+            <div class="info-box-title">✓ Conexión exitosa</div>
+            <div class="info-box-content">
+              Deberías ver el escritorio de Windows 10 dentro de una ventana en tu sistema Ubuntu.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen13.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#section4" class="nav-btn">← Anterior: Conexión RDP</a>
+        <a href="#section6" class="nav-btn primary">Siguiente: TeamViewer →</a>
+      </div>
+    </section>
+
+    <!-- Section 6: Conexión con TeamViewer -->
+    <section class="section" id="section6">
+      <div class="section-header">
+        <div class="section-number">6</div>
+        <h2 class="section-title">Conexión con TeamViewer</h2>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">6.1</div>
+          <h3 class="step-title">TeamViewer en Windows 10</h3>
+        </div>
+        <div class="step-content">
+          <p class="step-description">
+            TeamViewer es una solución multiplataforma para acceso remoto que funciona incluso a través de Internet.
+          </p>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Instalación</h4>
+          <div class="info-box">
+            <div class="info-box-title">📥 Descarga</div>
+            <div class="info-box-content">
+              Descarga TeamViewer desde: <a href="https://www.teamviewer.com/" target="_blank" style="color: var(--color-primary);">www.teamviewer.com</a>
+            </div>
+          </div>
+          <p class="step-description">
+            1. Descarga el instalador para Windows<br>
+            2. Ejecuta el archivo descargado<br>
+            3. Sigue el asistente de instalación<br>
+            4. Selecciona "Uso personal/no comercial" si aplica
+          </p>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Obtener ID y Contraseña</h4>
+          <p class="step-description">
+            Una vez instalado, TeamViewer mostrará:
+          </p>
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Valor de ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Su ID</td>
+                <td>1329 494 240</td>
+              </tr>
+              <tr>
+                <td>Contraseña</td>
+                <td>ttcyyuvq</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="info-box warning">
+            <div class="info-box-title">⚠️ Importante</div>
+            <div class="info-box-content">
+              Estos datos son únicos para cada instalación. La contraseña cambia automáticamente en cada inicio a menos que configures una contraseña personal.
+            </div>
+          </div>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen14.png" width="80%%" height="80%%">
+          <img src="media/Imagen15.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">6.2</div>
+          <h3 class="step-title">TeamViewer en Ubuntu Desktop</h3>
+        </div>
+        <div class="step-content">
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Método 1: Descarga desde el sitio web</h4>
+          <p class="step-description">
+            1. Ve a <a href="https://www.teamviewer.com/" target="_blank" style="color: var(--color-primary);">www.teamviewer.com</a><br>
+            2. Descarga el paquete <strong>.deb</strong> para Debian/Ubuntu<br>
+            3. Haz doble clic en el archivo descargado<br>
+            4. Instala usando el Centro de Software o con:
+          </p>
+          <div class="code-block">
+            <div class="code-header">
+              <span class="code-label">Instalar paquete .deb</span>
+              <button class="copy-btn" onclick="copyCode(this, 'sudo dpkg -i teamviewer_*.deb\nsudo apt-get install -f')">Copiar</button>
+            </div>
+            <div class="code-content">
+              <code>sudo dpkg -i teamviewer_*.deb<br>sudo apt-get install -f</code>
+            </div>
+          </div>
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Información de conexión</h4>
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Campo</th>
+                <th>Valor de ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Su ID</td>
+                <td>1 073 922 808</td>
+              </tr>
+              <tr>
+                <td>Contraseña</td>
+                <td>8tpmzi51</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen17.png" width="80%%" height="80%%">
+          <img src="media/Imagen18.png" width="80%%" height="80%%">
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">6.3</div>
+          <h3 class="step-title">Conectarse a un Equipo Remoto</h3>
+        </div>
+        <div class="step-content">
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Desde Windows o Ubuntu</h4>
+          <p class="step-description">
+            1. Abre TeamViewer<br>
+            2. En la sección "Controlar equipo remoto"<br>
+            3. Ingresa el <strong>ID del partner</strong> (del equipo al que te quieres conectar)<br>
+            4. Selecciona <strong>Control remoto</strong><br>
+            5. Haz clic en <strong>Conectar</strong><br>
+            6. Ingresa la <strong>contraseña</strong> del equipo remoto
+          </p>
+          <!-- Image Placeholder -->
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Desde Windows 10:</h4>
+          <img src="media/Imagen18.png" width="80%%" height="80%%">
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Desde Ubuntu Desktop:</h4>
+          <img src="media/Imagen19.png" width="80%%" height="80%%">
+
+          <h4 style="font-size: var(--font-size-md); margin: var(--space-16) 0 var(--space-12) 0; font-weight: var(--font-weight-semibold);">Desde dispositivo móvil</h4>
+          <div class="info-box">
+            <div class="info-box-title">📱 App móvil</div>
+            <div class="info-box-content">
+              TeamViewer está disponible para Android e iOS:
+            </div>
+          </div>
+          <p class="step-description">
+            1. Descarga la app "TeamViewer" desde tu tienda de aplicaciones<br>
+            2. Instala y abre la aplicación<br>
+            3. Toca en "Control remoto"<br>
+            4. Ingresa el ID del partner<br>
+            5. Ingresa la contraseña<br>
+            6. Disfruta del control remoto desde tu móvil
+          </p>
+          <!-- Image Placeholder -->
+          <img src="media/Imagen20.png" width="80%%" height="80%%">
+
+          <div class="info-box">
+            <div class="info-box-title">✓ Ventajas de TeamViewer</div>
+            <div class="info-box-content">
+              • Funciona a través de Internet (no solo en red local)<br>
+              • No requiere configuración de firewall o router<br>
+              • Multiplataforma (Windows, Linux, macOS, iOS, Android)<br>
+              • Transferencia de archivos integrada<br>
+              • Chat durante la sesión
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#section5" class="nav-btn">← Anterior: Ubuntu a Windows</a>
+        <a href="#hero" class="nav-btn primary">Volver al Inicio →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <p>Práctica de Conexión Remota - Guía Interactiva</p>
+    <p style="margin-top: var(--space-8); font-size: var(--font-size-xs); color: var(--color-text-secondary);">© 2025 - Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const footer = document.getElementById('footer');
+    const progressContainer = document.getElementById('progressContainer');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 1024) {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+
+    // Smooth scroll and active nav link
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section, .hero');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        // Remove active class from all links
+        navLinks.forEach(l => l.classList.remove('active'));
+        // Add active class to clicked link
+        link.classList.add('active');
+        
+        // Close mobile menu
+        if (window.innerWidth <= 1024) {
+          sidebar.classList.remove('active');
+        }
+      });
+    });
+
+    // Update active nav link on scroll
+    window.addEventListener('scroll', () => {
+      let current = '';
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-section') === current) {
+          link.classList.add('active');
+        }
+      });
+
+      // Update progress bar
+      updateProgressBar();
+    });
+
+    // Progress bar
+    function updateProgressBar() {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight - windowHeight;
+      const scrolled = window.pageYOffset;
+      const progress = (scrolled / documentHeight) * 100;
+      
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    // Copy code functionality
+    function copyCode(button, code) {
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        button.textContent = 'Copiado ✓';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+          button.textContent = 'Copiar';
+          button.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Error al copiar:', err);
+      }
+      
+      document.body.removeChild(textarea);
+    }
+
+    // Make copy function globally accessible
+    window.copyCode = copyCode;
+
+    // Update layout on resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    // Initialize
+    updateProgressBar();
+  </script>
+</body>
+</html>
